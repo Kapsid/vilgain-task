@@ -8,6 +8,7 @@ use App\DTO\Request\CreateUserRequest;
 use App\DTO\Request\RegisterRequest;
 use App\DTO\Request\UpdateUserRequest;
 use App\Entity\User;
+use App\Enum\UserRole;
 use App\Exception\EmailAlreadyExistsException;
 use App\Exception\EntityNotFoundException;
 use App\Repository\UserRepository;
@@ -63,7 +64,7 @@ final readonly class UserService
         }
 
         if (null !== $request->role) {
-            $user->setRole($request->getUserRole());
+            $user->setRole(UserRole::from($request->role));
         }
 
         $this->userRepository->save($user, true);

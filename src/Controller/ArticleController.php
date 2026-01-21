@@ -26,6 +26,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[OA\Tag(name: 'Articles')]
 final class ArticleController extends AbstractController
 {
+    private const MAX_LIMIT = 100;
+
     public function __construct(
         private readonly ArticleService $articleService,
     ) {
@@ -48,8 +50,8 @@ final class ArticleController extends AbstractController
     )]
     public function list(Request $request): JsonResponse
     {
-        $limit = $request->query->getInt('limit', 50);
-        $offset = $request->query->getInt('offset', 0);
+        $limit = min($request->query->getInt('limit', 50), self::MAX_LIMIT);
+        $offset = max($request->query->getInt('offset', 0), 0);
 
         $articles = $this->articleService->findAll($limit, $offset);
         $total = $this->articleService->countAll();
@@ -138,11 +140,12 @@ final class ArticleController extends AbstractController
     public function update(
         int $id,
         #[MapRequestPayload] UpdateArticleRequest $request,
+        #[CurrentUser] User $user,
     ): JsonResponse {
         $article = $this->articleService->findByIdOrFail($id);
         $this->denyAccessUnlessGranted(ArticleVoter::EDIT, $article);
 
-        $article = $this->articleService->updateArticle($article, $request);
+        $article = $this->articleService->updateArticle($article, $request, $user);
 
         return $this->json(ArticleResponse::fromEntity($article));
     }

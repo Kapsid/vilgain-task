@@ -66,9 +66,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        // Email is always set before persisting, validated by @NotBlank
+        \assert(null !== $this->email && '' !== $this->email);
+
+        return $this->email;
     }
 
     /**
@@ -76,10 +82,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        $roles = [$this->role->toSymfonyRole()];
-        $roles[] = 'ROLE_USER';
+        $roles = [$this->role->toSymfonyRole(), 'ROLE_USER'];
 
-        return array_unique($roles);
+        return array_values(array_unique($roles));
     }
 
     public function getPassword(): ?string

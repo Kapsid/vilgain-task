@@ -17,19 +17,26 @@ final readonly class ArticleResponse
         public string $authorName,
         public string $createdAt,
         public string $updatedAt,
+        public ?int $updatedById,
+        public ?string $updatedByName,
     ) {
     }
 
     public static function fromEntity(Article $article): self
     {
+        $author = $article->getAuthor();
+        $updatedBy = $article->getUpdatedBy();
+
         return new self(
-            id: $article->getId(),
-            title: $article->getTitle(),
-            content: $article->getContent(),
-            authorId: $article->getAuthor()->getId(),
-            authorName: $article->getAuthor()->getName(),
-            createdAt: $article->getCreatedAt()->format(DateTimeInterface::ATOM),
-            updatedAt: $article->getUpdatedAt()->format(DateTimeInterface::ATOM),
+            id: $article->getId() ?? 0,
+            title: $article->getTitle() ?? '',
+            content: $article->getContent() ?? '',
+            authorId: $author?->getId() ?? 0,
+            authorName: $author?->getName() ?? 'Unknown',
+            createdAt: $article->getCreatedAt()?->format(DateTimeInterface::ATOM) ?? '',
+            updatedAt: $article->getUpdatedAt()?->format(DateTimeInterface::ATOM) ?? '',
+            updatedById: $updatedBy?->getId(),
+            updatedByName: $updatedBy?->getName(),
         );
     }
 }

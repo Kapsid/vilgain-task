@@ -7,19 +7,20 @@ if [ -z "$STAGED_FILES" ]; then
     exit 0
 fi
 
-echo "Running PHP CS Fixer on staged files..."
-
 # Check if running in Docker or locally
 if [ -f "vendor/bin/php-cs-fixer" ]; then
     PHP_CS_FIXER="vendor/bin/php-cs-fixer"
+    PHPSTAN="vendor/bin/phpstan"
 elif docker-compose ps app 2>/dev/null | grep -q "Up"; then
     PHP_CS_FIXER="docker-compose exec -T app vendor/bin/php-cs-fixer"
+    PHPSTAN="docker-compose exec -T app vendor/bin/phpstan"
 else
-    echo "PHP CS Fixer not found. Please run composer install or start Docker containers."
+    echo "Tools not found. Please run composer install or start Docker containers."
     exit 1
 fi
 
-# Run CS Fixer on staged files
+# Run PHP CS Fixer on staged files
+echo "Running PHP CS Fixer on staged files..."
 FAILED=0
 for FILE in $STAGED_FILES; do
     if [ -f "$FILE" ]; then
@@ -39,4 +40,17 @@ if [ $FAILED -ne 0 ]; then
 fi
 
 echo "PHP CS Fixer completed successfully."
+
+# Run PHPStan on staged files
+echo ""
+echo "Running PHPStan on staged files..."
+$PHPSTAN analyse $STAGED_FILES --no-progress --memory-limit=512M
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "PHPStan found errors. Please fix them before committing."
+    exit 1
+fi
+
+echo "PHPStan completed successfully."
 exit 0

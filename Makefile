@@ -1,4 +1,4 @@
-.PHONY: up down run test fixtures build cs-fix cs-check hooks-install test-setup
+.PHONY: up down run test fixtures build cs-fix cs-check stan hooks-install test-setup quality
 
 # Build containers
 build:
@@ -50,7 +50,14 @@ cs-fix:
 cs-check:
 	docker-compose exec app vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff
 
+# Run PHPStan static analysis
+stan:
+	docker-compose exec app vendor/bin/phpstan analyse --memory-limit=512M
+
 # Install git hooks
 hooks-install:
 	git config core.hooksPath .githooks
-	@echo "Git hooks installed. Pre-commit hook will run PHP CS Fixer on staged files."
+	@echo "Git hooks installed. Pre-commit hook will run PHP CS Fixer and PHPStan on staged files."
+
+# Run all quality checks (CS Fixer check + PHPStan + Tests)
+quality: cs-check stan test

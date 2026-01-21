@@ -1,0 +1,12 @@
+framework:
+    rate_limiter:
+        # Higher limits for testing
+        login:
+            policy: 'sliding_window'
+            limit: 1000
+            interval: '1 minute'
+
+        registration:
+            policy: 'sliding_window'
+            limit: 1000
+            interval: '1 minute'

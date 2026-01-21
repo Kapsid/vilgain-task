@@ -23,7 +23,7 @@ final readonly class RegisterRequest
         public string $name,
 
         #[Assert\NotBlank]
-        #[Assert\Choice(choices: ['admin', 'author', 'reader'])]
+        #[Assert\Choice(choices: ['author', 'reader'], message: 'Role must be either "author" or "reader".')]
         public string $role,
     ) {
     }

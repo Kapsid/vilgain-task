@@ -65,6 +65,9 @@ abstract class ApiTestCase extends WebTestCase
         return $jwtManager->create($user);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function authenticatedRequest(
         User $user,
         string $method,
@@ -72,6 +75,7 @@ abstract class ApiTestCase extends WebTestCase
         array $data = [],
     ): void {
         $token = $this->getJwtToken($user);
+        $content = !empty($data) ? json_encode($data) : null;
 
         $this->client->request(
             $method,
@@ -82,12 +86,17 @@ abstract class ApiTestCase extends WebTestCase
                 'CONTENT_TYPE' => 'application/json',
                 'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ],
-            !empty($data) ? json_encode($data) : null,
+            false !== $content ? $content : null,
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function getResponseData(): array
     {
-        return json_decode($this->client->getResponse()->getContent(), true) ?? [];
+        $content = $this->client->getResponse()->getContent();
+
+        return false !== $content ? (json_decode($content, true) ?? []) : [];
     }
 }

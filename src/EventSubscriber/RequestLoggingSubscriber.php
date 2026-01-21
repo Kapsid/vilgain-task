@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final class RequestLoggingSubscriber implements EventSubscriberInterface
 {
+    /** @var array<int, float> */
     private array $requestStartTimes = [];
 
     public function __construct(

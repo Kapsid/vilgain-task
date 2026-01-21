@@ -24,6 +24,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
+    private const MAX_LIMIT = 100;
+
     public function __construct(
         private readonly UserService $userService,
     ) {
@@ -48,8 +50,8 @@ final class UserController extends AbstractController
     )]
     public function list(Request $request): JsonResponse
     {
-        $limit = $request->query->getInt('limit', 50);
-        $offset = $request->query->getInt('offset', 0);
+        $limit = min($request->query->getInt('limit', 50), self::MAX_LIMIT);
+        $offset = max($request->query->getInt('offset', 0), 0);
 
         $users = $this->userService->findAll($limit, $offset);
         $total = $this->userService->countAll();

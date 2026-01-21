@@ -30,7 +30,7 @@ final readonly class ArticleService
         return $article;
     }
 
-    public function updateArticle(Article $article, UpdateArticleRequest $request): Article
+    public function updateArticle(Article $article, UpdateArticleRequest $request, User $updatedBy): Article
     {
         if (null !== $request->title) {
             $article->setTitle($request->title);
@@ -39,6 +39,8 @@ final readonly class ArticleService
         if (null !== $request->content) {
             $article->setContent($request->content);
         }
+
+        $article->setUpdatedBy($updatedBy);
 
         $this->articleRepository->save($article, true);
 

@@ -38,6 +38,10 @@ class Article
     #[ORM\Column]
     private ?DateTimeImmutable $updatedAt = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $updatedBy = null;
+
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
@@ -105,6 +109,18 @@ class Article
     public function setUpdatedAt(DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getUpdatedBy(): ?User
+    {
+        return $this->updatedBy;
+    }
+
+    public function setUpdatedBy(?User $updatedBy): static
+    {
+        $this->updatedBy = $updatedBy;
 
         return $this;
     }
