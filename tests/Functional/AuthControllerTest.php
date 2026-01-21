@@ -15,13 +15,13 @@ final class AuthControllerTest extends WebTestCase
 
         $client->request(
             'POST',
-            '/auth/register',
+            '/api/v1/auth/register',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'email' => 'newuser@example.com',
-                'password' => 'password123',
+                'password' => 'SecurePass123',
                 'name' => 'New User',
                 'role' => 'reader',
             ]),
@@ -34,6 +34,8 @@ final class AuthControllerTest extends WebTestCase
         $this->assertSame('newuser@example.com', $response['email']);
         $this->assertSame('New User', $response['name']);
         $this->assertSame('reader', $response['role']);
+        $this->assertArrayHasKey('createdAt', $response);
+        $this->assertArrayHasKey('updatedAt', $response);
     }
 
     public function testRegisterReturnsValidationErrorOnInvalidEmail(): void
@@ -42,14 +44,56 @@ final class AuthControllerTest extends WebTestCase
 
         $client->request(
             'POST',
-            '/auth/register',
+            '/api/v1/auth/register',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'email' => 'invalid-email',
-                'password' => 'password123',
+                'password' => 'SecurePass123',
                 'name' => 'New User',
+                'role' => 'reader',
+            ]),
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testRegisterReturnsValidationErrorOnWeakPassword(): void
+    {
+        $client = static::createClient();
+
+        $client->request(
+            'POST',
+            '/api/v1/auth/register',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'email' => 'user@example.com',
+                'password' => 'weak',
+                'name' => 'User',
+                'role' => 'reader',
+            ]),
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testRegisterReturnsValidationErrorOnPasswordWithoutUppercase(): void
+    {
+        $client = static::createClient();
+
+        $client->request(
+            'POST',
+            '/api/v1/auth/register',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'email' => 'user@example.com',
+                'password' => 'alllowercase123',
+                'name' => 'User',
                 'role' => 'reader',
             ]),
         );
@@ -64,13 +108,13 @@ final class AuthControllerTest extends WebTestCase
         // First registration
         $client->request(
             'POST',
-            '/auth/register',
+            '/api/v1/auth/register',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'email' => 'duplicate@example.com',
-                'password' => 'password123',
+                'password' => 'SecurePass123',
                 'name' => 'First User',
                 'role' => 'reader',
             ]),
@@ -81,13 +125,13 @@ final class AuthControllerTest extends WebTestCase
         // Second registration with same email
         $client->request(
             'POST',
-            '/auth/register',
+            '/api/v1/auth/register',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'email' => 'duplicate@example.com',
-                'password' => 'password456',
+                'password' => 'SecurePass456',
                 'name' => 'Second User',
                 'role' => 'author',
             ]),
@@ -102,13 +146,13 @@ final class AuthControllerTest extends WebTestCase
 
         $client->request(
             'POST',
-            '/auth/register',
+            '/api/v1/auth/register',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'email' => 'user@example.com',
-                'password' => 'password123',
+                'password' => 'SecurePass123',
                 'name' => 'User',
                 'role' => 'invalid_role',
             ]),

@@ -11,3 +11,9 @@ framework:
             policy: 'sliding_window'
             limit: 3
             interval: '1 hour'
+
+        # Global API rate limit: 100 requests per minute per IP
+        api:
+            policy: 'sliding_window'
+            limit: 100
+            interval: '1 minute'

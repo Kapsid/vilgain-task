@@ -68,7 +68,7 @@ final readonly class ArticleService
      */
     public function findAll(int $limit = 50, int $offset = 0): array
     {
-        return $this->articleRepository->findBy([], ['createdAt' => 'DESC'], $limit, $offset);
+        return $this->articleRepository->findAllWithAuthor($limit, $offset);
     }
 
     public function countAll(): int

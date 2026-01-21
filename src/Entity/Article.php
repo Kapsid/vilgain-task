@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
+#[ORM\Table(indexes: [
+    new ORM\Index(name: 'idx_article_created_at', columns: ['created_at']),
+])]
 #[ORM\HasLifecycleCallbacks]
 class Article
 {

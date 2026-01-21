@@ -9,11 +9,11 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 final class EmailAlreadyExistsException extends HttpException
 {
-    public function __construct(string $email)
+    public function __construct()
     {
         parent::__construct(
             Response::HTTP_CONFLICT,
-            \sprintf('Email "%s" is already registered.', $email),
+            'An account with this email address already exists.',
         );
     }
 }

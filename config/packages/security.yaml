@@ -14,10 +14,10 @@ security:
             security: false
 
         login:
-            pattern: ^/auth/login
+            pattern: ^/api/v1/auth/login
             stateless: true
             json_login:
-                check_path: /auth/login
+                check_path: /api/v1/auth/login
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
@@ -31,12 +31,12 @@ security:
 
     access_control:
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
-        - { path: ^/auth/register, roles: PUBLIC_ACCESS }
-        - { path: ^/auth/login, roles: PUBLIC_ACCESS }
-        - { path: ^/users, roles: ROLE_ADMIN, methods: [GET, POST, PUT, DELETE] }
-        - { path: ^/articles, roles: PUBLIC_ACCESS, methods: [GET] }
-        - { path: ^/articles, roles: [ROLE_ADMIN, ROLE_AUTHOR], methods: [POST] }
-        - { path: ^/articles, roles: ROLE_USER, methods: [PUT, DELETE] }
+        - { path: ^/api/v1/auth/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/auth/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/users, roles: ROLE_ADMIN, methods: [GET, POST, PUT, DELETE] }
+        - { path: ^/api/v1/articles, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/v1/articles, roles: [ROLE_ADMIN, ROLE_AUTHOR], methods: [POST] }
+        - { path: ^/api/v1/articles, roles: ROLE_USER, methods: [PUT, DELETE] }
 
     role_hierarchy:
         ROLE_ADMIN: [ROLE_AUTHOR, ROLE_READER]

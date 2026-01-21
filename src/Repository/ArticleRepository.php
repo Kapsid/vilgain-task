@@ -52,4 +52,22 @@ class ArticleRepository extends ServiceEntityRepository
     {
         return $this->findBy([], ['createdAt' => 'DESC']);
     }
+
+    /**
+     * Find articles with author eagerly loaded to prevent N+1 queries.
+     *
+     * @return Article[]
+     */
+    public function findAllWithAuthor(int $limit, int $offset): array
+    {
+        return $this->createQueryBuilder('a')
+            ->select('a', 'author', 'updatedBy')
+            ->leftJoin('a.author', 'author')
+            ->leftJoin('a.updatedBy', 'updatedBy')
+            ->orderBy('a.createdAt', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

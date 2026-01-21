@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/users')]
+#[Route('/api/v1/users')]
 #[OA\Tag(name: 'Users')]
 #[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController

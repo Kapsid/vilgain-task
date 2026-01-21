@@ -12,7 +12,7 @@ final class UserManagementTest extends ApiTestCase
     {
         $reader = $this->createReader();
 
-        $this->authenticatedRequest($reader, 'GET', '/users');
+        $this->authenticatedRequest($reader, 'GET', '/api/v1/users');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -21,7 +21,7 @@ final class UserManagementTest extends ApiTestCase
     {
         $author = $this->createAuthor();
 
-        $this->authenticatedRequest($author, 'GET', '/users');
+        $this->authenticatedRequest($author, 'GET', '/api/v1/users');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -30,7 +30,7 @@ final class UserManagementTest extends ApiTestCase
     {
         $admin = $this->createAdmin();
 
-        $this->authenticatedRequest($admin, 'GET', '/users');
+        $this->authenticatedRequest($admin, 'GET', '/api/v1/users');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
@@ -44,9 +44,9 @@ final class UserManagementTest extends ApiTestCase
     {
         $admin = $this->createAdmin();
 
-        $this->authenticatedRequest($admin, 'POST', '/users', [
+        $this->authenticatedRequest($admin, 'POST', '/api/v1/users', [
             'email' => 'newuser@example.com',
-            'password' => 'password123',
+            'password' => 'SecurePass123',
             'name' => 'New User',
             'role' => 'author',
         ]);
@@ -62,9 +62,9 @@ final class UserManagementTest extends ApiTestCase
     {
         $author = $this->createAuthor();
 
-        $this->authenticatedRequest($author, 'POST', '/users', [
+        $this->authenticatedRequest($author, 'POST', '/api/v1/users', [
             'email' => 'newuser@example.com',
-            'password' => 'password123',
+            'password' => 'SecurePass123',
             'name' => 'New User',
             'role' => 'reader',
         ]);
@@ -77,7 +77,7 @@ final class UserManagementTest extends ApiTestCase
         $admin = $this->createAdmin();
         $reader = $this->createReader('reader@example.com', 'Reader');
 
-        $this->authenticatedRequest($admin, 'PUT', '/users/'.$reader->getId(), [
+        $this->authenticatedRequest($admin, 'PUT', '/api/v1/users/'.$reader->getId(), [
             'name' => 'Updated Reader',
             'role' => 'author',
         ]);
@@ -96,7 +96,7 @@ final class UserManagementTest extends ApiTestCase
 
         $readerId = $reader->getId();
 
-        $this->authenticatedRequest($admin, 'DELETE', '/users/'.$readerId);
+        $this->authenticatedRequest($admin, 'DELETE', '/api/v1/users/'.$readerId);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
@@ -106,14 +106,14 @@ final class UserManagementTest extends ApiTestCase
         $admin = $this->createAdmin();
         $author = $this->createAuthor();
 
-        $this->authenticatedRequest($author, 'DELETE', '/users/'.$admin->getId());
+        $this->authenticatedRequest($author, 'DELETE', '/api/v1/users/'.$admin->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testUnauthenticatedCannotAccessUsers(): void
     {
-        $this->client->request('GET', '/users');
+        $this->client->request('GET', '/api/v1/users');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }

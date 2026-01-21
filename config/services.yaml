@@ -27,3 +27,8 @@ services:
         arguments:
             $loginLimiter: '@limiter.login'
             $registrationLimiter: '@limiter.registration'
+            $apiLimiter: '@limiter.api'
+
+    App\EventSubscriber\ExceptionSubscriber:
+        arguments:
+            $environment: '%kernel.environment%'

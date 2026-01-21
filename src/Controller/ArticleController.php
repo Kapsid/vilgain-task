@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/articles')]
+#[Route('/api/v1/articles')]
 #[OA\Tag(name: 'Articles')]
 final class ArticleController extends AbstractController
 {

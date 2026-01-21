@@ -1,10 +1,14 @@
 # Dependencies
 /vendor/
 
-# Symfony
+# Environment files
+/.env
 /.env.local
 /.env.local.php
 /.env.*.local
+/.env.dev
+
+# Symfony
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
@@ -46,9 +50,6 @@ compose.override.yaml
 *.log
 
 ###> symfony/framework-bundle ###
-/.env.local
-/.env.local.php
-/.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
@@ -56,7 +57,9 @@ compose.override.yaml
 ###< symfony/framework-bundle ###
 
 ###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
+# JWT keys (generated, not committed)
+/config/jwt/private.pem
+/config/jwt/public.pem
 ###< lexik/jwt-authentication-bundle ###
 
 ###> phpunit/phpunit ###

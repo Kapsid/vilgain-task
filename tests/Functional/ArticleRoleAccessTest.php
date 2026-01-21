@@ -13,9 +13,9 @@ final class ArticleRoleAccessTest extends ApiTestCase
     {
         $reader = $this->createReader();
 
-        $this->authenticatedRequest($reader, 'POST', '/articles', [
+        $this->authenticatedRequest($reader, 'POST', '/api/v1/articles', [
             'title' => 'Test Article',
-            'content' => 'Test content',
+            'content' => 'Test content that is long enough to pass validation requirements.',
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
@@ -25,9 +25,9 @@ final class ArticleRoleAccessTest extends ApiTestCase
     {
         $author = $this->createAuthor();
 
-        $this->authenticatedRequest($author, 'POST', '/articles', [
+        $this->authenticatedRequest($author, 'POST', '/api/v1/articles', [
             'title' => 'Author Article',
-            'content' => 'Article content by author',
+            'content' => 'Article content by author that meets the minimum length requirement.',
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
@@ -41,9 +41,9 @@ final class ArticleRoleAccessTest extends ApiTestCase
     {
         $admin = $this->createAdmin();
 
-        $this->authenticatedRequest($admin, 'POST', '/articles', [
+        $this->authenticatedRequest($admin, 'POST', '/api/v1/articles', [
             'title' => 'Admin Article',
-            'content' => 'Article content by admin',
+            'content' => 'Article content by admin that meets the minimum length requirement.',
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
@@ -52,18 +52,30 @@ final class ArticleRoleAccessTest extends ApiTestCase
         $this->assertSame('Admin Article', $response['title']);
     }
 
+    public function testContentValidationRejectsShortContent(): void
+    {
+        $author = $this->createAuthor();
+
+        $this->authenticatedRequest($author, 'POST', '/api/v1/articles', [
+            'title' => 'Article Title',
+            'content' => 'Short',
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     public function testAuthorCanEditOwnArticle(): void
     {
         $author = $this->createAuthor();
 
         $article = new Article();
         $article->setTitle('Original Title');
-        $article->setContent('Original content');
+        $article->setContent('Original content that meets the minimum length requirement.');
         $article->setAuthor($author);
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
-        $this->authenticatedRequest($author, 'PUT', '/articles/'.$article->getId(), [
+        $this->authenticatedRequest($author, 'PUT', '/api/v1/articles/'.$article->getId(), [
             'title' => 'Updated Title',
         ]);
 
@@ -80,12 +92,12 @@ final class ArticleRoleAccessTest extends ApiTestCase
 
         $article = new Article();
         $article->setTitle('Author 1 Article');
-        $article->setContent('Content by author 1');
+        $article->setContent('Content by author 1 that meets the minimum length.');
         $article->setAuthor($author1);
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
-        $this->authenticatedRequest($author2, 'PUT', '/articles/'.$article->getId(), [
+        $this->authenticatedRequest($author2, 'PUT', '/api/v1/articles/'.$article->getId(), [
             'title' => 'Hacked Title',
         ]);
 
@@ -99,12 +111,12 @@ final class ArticleRoleAccessTest extends ApiTestCase
 
         $article = new Article();
         $article->setTitle('Author Article');
-        $article->setContent('Content by author');
+        $article->setContent('Content by author that meets the minimum length requirement.');
         $article->setAuthor($author);
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
-        $this->authenticatedRequest($admin, 'PUT', '/articles/'.$article->getId(), [
+        $this->authenticatedRequest($admin, 'PUT', '/api/v1/articles/'.$article->getId(), [
             'title' => 'Admin Updated Title',
         ]);
 
@@ -121,12 +133,12 @@ final class ArticleRoleAccessTest extends ApiTestCase
 
         $article = new Article();
         $article->setTitle('Article to Delete');
-        $article->setContent('Content');
+        $article->setContent('Content that meets the minimum length requirement.');
         $article->setAuthor($author);
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
-        $this->authenticatedRequest($reader, 'DELETE', '/articles/'.$article->getId());
+        $this->authenticatedRequest($reader, 'DELETE', '/api/v1/articles/'.$article->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -137,14 +149,14 @@ final class ArticleRoleAccessTest extends ApiTestCase
 
         $article = new Article();
         $article->setTitle('Article to Delete');
-        $article->setContent('Content');
+        $article->setContent('Content that meets the minimum length requirement.');
         $article->setAuthor($author);
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
         $articleId = $article->getId();
 
-        $this->authenticatedRequest($author, 'DELETE', '/articles/'.$articleId);
+        $this->authenticatedRequest($author, 'DELETE', '/api/v1/articles/'.$articleId);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
 
@@ -160,14 +172,14 @@ final class ArticleRoleAccessTest extends ApiTestCase
 
         $article = new Article();
         $article->setTitle('Article to Delete');
-        $article->setContent('Content');
+        $article->setContent('Content that meets the minimum length requirement.');
         $article->setAuthor($author);
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
         $articleId = $article->getId();
 
-        $this->authenticatedRequest($admin, 'DELETE', '/articles/'.$articleId);
+        $this->authenticatedRequest($admin, 'DELETE', '/api/v1/articles/'.$articleId);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
@@ -178,13 +190,13 @@ final class ArticleRoleAccessTest extends ApiTestCase
 
         $article = new Article();
         $article->setTitle('Public Article');
-        $article->setContent('Public content');
+        $article->setContent('Public content that meets the minimum length requirement.');
         $article->setAuthor($author);
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
         // Unauthenticated request
-        $this->client->request('GET', '/articles');
+        $this->client->request('GET', '/api/v1/articles');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
@@ -201,13 +213,13 @@ final class ArticleRoleAccessTest extends ApiTestCase
 
         $article = new Article();
         $article->setTitle('Detail Article');
-        $article->setContent('Detail content');
+        $article->setContent('Detail content that meets the minimum length requirement.');
         $article->setAuthor($author);
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
         // Unauthenticated request
-        $this->client->request('GET', '/articles/'.$article->getId());
+        $this->client->request('GET', '/api/v1/articles/'.$article->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 

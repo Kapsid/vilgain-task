@@ -3,11 +3,12 @@ parameters:
     paths:
         - src
         - tests
+        - migrations
     excludePaths:
         - var
         - vendor
     ignoreErrors:
-        # Doctrine entity IDs are assigned by database
+        # Doctrine entity IDs are assigned by database, not in code
         - '#Property .+::\$id \(int\|null\) is never assigned int#'
         # json_encode can return false, but we control the input
         - '#Parameter .+ of method .+::request\(\) expects string\|null, string\|false given#'
@@ -18,7 +19,7 @@ parameters:
         -
             message: '#Method .+Provider\(\) return type has no value type specified in iterable type array#'
             path: tests/
-        # Container::get() returns object without Symfony extension context
+        # Container::get() returns object without proper type inference in test context
         -
             message: '#does not accept object#'
             path: tests/

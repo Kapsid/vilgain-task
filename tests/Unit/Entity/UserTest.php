@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\Article;
 use App\Entity\User;
 use App\Enum\UserRole;
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -82,128 +82,30 @@ final class UserTest extends TestCase
     }
 
     #[Test]
-    public function adminCanCreateArticle(): void
+    public function userHasTimestampsOnCreation(): void
     {
-        $admin = new User();
-        $admin->setRole(UserRole::ADMIN);
+        $beforeCreation = new DateTimeImmutable();
+        $user = new User();
+        $afterCreation = new DateTimeImmutable();
 
-        $this->assertTrue($admin->canCreateArticle());
+        $this->assertNotNull($user->getCreatedAt());
+        $this->assertNotNull($user->getUpdatedAt());
+        $this->assertGreaterThanOrEqual($beforeCreation, $user->getCreatedAt());
+        $this->assertLessThanOrEqual($afterCreation, $user->getCreatedAt());
+        $this->assertGreaterThanOrEqual($beforeCreation, $user->getUpdatedAt());
+        $this->assertLessThanOrEqual($afterCreation, $user->getUpdatedAt());
     }
 
     #[Test]
-    public function authorCanCreateArticle(): void
+    public function userTimestampsCanBeSet(): void
     {
-        $author = new User();
-        $author->setRole(UserRole::AUTHOR);
+        $user = new User();
+        $timestamp = new DateTimeImmutable('2024-01-15 10:30:00');
 
-        $this->assertTrue($author->canCreateArticle());
-    }
+        $user->setCreatedAt($timestamp);
+        $user->setUpdatedAt($timestamp);
 
-    #[Test]
-    public function readerCannotCreateArticle(): void
-    {
-        $reader = new User();
-        $reader->setRole(UserRole::READER);
-
-        $this->assertFalse($reader->canCreateArticle());
-    }
-
-    #[Test]
-    public function adminCanEditAnyArticle(): void
-    {
-        $admin = new User();
-        $admin->setRole(UserRole::ADMIN);
-
-        $author = new User();
-        $author->setRole(UserRole::AUTHOR);
-
-        $article = new Article();
-        $article->setAuthor($author);
-
-        $this->assertTrue($admin->canEditArticle($article));
-    }
-
-    #[Test]
-    public function authorCanEditOwnArticle(): void
-    {
-        $author = new User();
-        $author->setRole(UserRole::AUTHOR);
-
-        $article = new Article();
-        $article->setAuthor($author);
-
-        $this->assertTrue($author->canEditArticle($article));
-    }
-
-    #[Test]
-    public function authorCannotEditOthersArticle(): void
-    {
-        $author1 = new User();
-        $author1->setRole(UserRole::AUTHOR);
-
-        $author2 = new User();
-        $author2->setRole(UserRole::AUTHOR);
-
-        $article = new Article();
-        $article->setAuthor($author1);
-
-        $this->assertFalse($author2->canEditArticle($article));
-    }
-
-    #[Test]
-    public function readerCannotEditArticle(): void
-    {
-        $author = new User();
-        $author->setRole(UserRole::AUTHOR);
-
-        $reader = new User();
-        $reader->setRole(UserRole::READER);
-
-        $article = new Article();
-        $article->setAuthor($author);
-
-        $this->assertFalse($reader->canEditArticle($article));
-    }
-
-    #[Test]
-    public function adminCanDeleteAnyArticle(): void
-    {
-        $admin = new User();
-        $admin->setRole(UserRole::ADMIN);
-
-        $author = new User();
-        $author->setRole(UserRole::AUTHOR);
-
-        $article = new Article();
-        $article->setAuthor($author);
-
-        $this->assertTrue($admin->canDeleteArticle($article));
-    }
-
-    #[Test]
-    public function authorCanDeleteOwnArticle(): void
-    {
-        $author = new User();
-        $author->setRole(UserRole::AUTHOR);
-
-        $article = new Article();
-        $article->setAuthor($author);
-
-        $this->assertTrue($author->canDeleteArticle($article));
-    }
-
-    #[Test]
-    public function authorCannotDeleteOthersArticle(): void
-    {
-        $author1 = new User();
-        $author1->setRole(UserRole::AUTHOR);
-
-        $author2 = new User();
-        $author2->setRole(UserRole::AUTHOR);
-
-        $article = new Article();
-        $article->setAuthor($author1);
-
-        $this->assertFalse($author2->canDeleteArticle($article));
+        $this->assertSame($timestamp, $user->getCreatedAt());
+        $this->assertSame($timestamp, $user->getUpdatedAt());
     }
 }

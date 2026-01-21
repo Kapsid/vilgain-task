@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/auth')]
+#[Route('/api/v1/auth')]
 #[OA\Tag(name: 'Authentication')]
 final class AuthController extends AbstractController
 {

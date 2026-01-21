@@ -24,28 +24,37 @@ final readonly class UserService
 
     public function register(RegisterRequest $request): User
     {
-        $this->ensureEmailNotExists($request->email);
-
-        $user = new User();
-        $user->setEmail($request->email);
-        $user->setName($request->name);
-        $user->setRole($request->getUserRole());
-        $user->setPassword($this->passwordHasher->hashPassword($user, $request->password));
-
-        $this->userRepository->save($user, true);
-
-        return $user;
+        return $this->createUserInternal(
+            $request->email,
+            $request->password,
+            $request->name,
+            $request->getUserRole(),
+        );
     }
 
     public function createUser(CreateUserRequest $request): User
     {
-        $this->ensureEmailNotExists($request->email);
+        return $this->createUserInternal(
+            $request->email,
+            $request->password,
+            $request->name,
+            $request->getUserRole(),
+        );
+    }
+
+    private function createUserInternal(
+        string $email,
+        string $password,
+        string $name,
+        UserRole $role,
+    ): User {
+        $this->ensureEmailNotExists($email);
 
         $user = new User();
-        $user->setEmail($request->email);
-        $user->setName($request->name);
-        $user->setRole($request->getUserRole());
-        $user->setPassword($this->passwordHasher->hashPassword($user, $request->password));
+        $user->setEmail($email);
+        $user->setName($name);
+        $user->setRole($role);
+        $user->setPassword($this->passwordHasher->hashPassword($user, $password));
 
         $this->userRepository->save($user, true);
 
@@ -114,7 +123,7 @@ final readonly class UserService
     private function ensureEmailNotExists(string $email): void
     {
         if ($this->emailExists($email)) {
-            throw new EmailAlreadyExistsException($email);
+            throw new EmailAlreadyExistsException();
         }
     }
 }

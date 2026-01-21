@@ -46,21 +46,21 @@ class AppFixtures extends Fixture
         $admin->setEmail('admin@example.com');
         $admin->setName('Admin User');
         $admin->setRole(UserRole::ADMIN);
-        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'AdminPass123'));
         $manager->persist($admin);
 
         $author = new User();
         $author->setEmail('author@example.com');
         $author->setName('Author User');
         $author->setRole(UserRole::AUTHOR);
-        $author->setPassword($this->passwordHasher->hashPassword($author, 'author123'));
+        $author->setPassword($this->passwordHasher->hashPassword($author, 'AuthorPass123'));
         $manager->persist($author);
 
         $reader = new User();
         $reader->setEmail('reader@example.com');
         $reader->setName('Reader User');
         $reader->setRole(UserRole::READER);
-        $reader->setPassword($this->passwordHasher->hashPassword($reader, 'reader123'));
+        $reader->setPassword($this->passwordHasher->hashPassword($reader, 'ReaderPass123'));
         $manager->persist($reader);
 
         // Random users
@@ -89,7 +89,7 @@ class AppFixtures extends Fixture
             $user->setEmail($email);
             $user->setName($name);
             $user->setRole($role);
-            $user->setPassword($this->passwordHasher->hashPassword($user, 'password123'));
+            $user->setPassword($this->passwordHasher->hashPassword($user, 'SecurePass123'));
             $manager->persist($user);
         }
 
