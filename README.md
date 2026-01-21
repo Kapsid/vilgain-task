@@ -113,6 +113,7 @@ Note: Public registration (`/api/v1/auth/register`) only allows `author` and `re
 - PHPStan and PHP-CS-Fixer in pre-commit
 - PHPUnit for testing
 - Rate limiting (see `config/packages/rate_limiter.yaml`)
+- Logging using Monolog
 
 ## Potential improvements for the future
 - Check leaked passwords when registering (NotCompromisedPassword)
@@ -121,3 +122,4 @@ Note: Public registration (`/api/v1/auth/register`) only allows `author` and `re
 - API: Implementation of sorting and filtering
 - JWT refresh token
 - CORS configuration for frontend integration
+- Logging could probably be robust when project grows bigger (but we still need to be careful what to log)
