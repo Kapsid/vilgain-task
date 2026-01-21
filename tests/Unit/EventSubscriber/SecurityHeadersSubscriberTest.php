@@ -31,10 +31,10 @@ final class SecurityHeadersSubscriberTest extends TestCase
     }
 
     #[Test]
-    public function addsSecurityHeadersToResponse(): void
+    public function addsRestrictiveCspToApiEndpoints(): void
     {
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $request = new Request();
+        $request = Request::create('/api/v1/articles');
         $response = new Response();
 
         $event = new ResponseEvent(
@@ -52,6 +52,26 @@ final class SecurityHeadersSubscriberTest extends TestCase
         $this->assertSame('strict-origin-when-cross-origin', $response->headers->get('Referrer-Policy'));
         $this->assertSame("default-src 'none'; frame-ancestors 'none'", $response->headers->get('Content-Security-Policy'));
         $this->assertSame('geolocation=(), microphone=(), camera=()', $response->headers->get('Permissions-Policy'));
+    }
+
+    #[Test]
+    public function addsPermissiveCspToApiDocEndpoint(): void
+    {
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $request = Request::create('/api/doc');
+        $response = new Response();
+
+        $event = new ResponseEvent(
+            $kernel,
+            $request,
+            HttpKernelInterface::MAIN_REQUEST,
+            $response,
+        );
+
+        $this->subscriber->onKernelResponse($event);
+
+        $expectedCsp = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'";
+        $this->assertSame($expectedCsp, $response->headers->get('Content-Security-Policy'));
     }
 
     #[Test]

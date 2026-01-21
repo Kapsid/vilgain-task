@@ -15,3 +15,5 @@ nelmio_api_doc:
     areas:
         path_patterns:
             - ^/(?!api/doc|_)
+    html_config:
+        assets_mode: bundle
