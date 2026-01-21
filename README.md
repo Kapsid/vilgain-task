@@ -19,13 +19,6 @@ This will:
 - API: http://localhost:8080
 - Swagger UI: http://localhost:8080/api/doc
 
-**Test users:**
-| Email | Password | Role |
-|-------|----------|------|
-| admin@example.com | admin123 | Admin |
-| author@example.com | author123 | Author |
-| reader@example.com | reader123 | Reader |
-
 ## Make Commands
 
 | Command | Description |
