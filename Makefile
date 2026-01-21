@@ -49,10 +49,8 @@ run: setup up wait
 	@echo "API: http://localhost:8080"
 	@echo "Swagger: http://localhost:8080/api/doc"
 	@echo ""
-	@echo "Test users:"
-	@echo "  admin@example.com / AdminPass123"
-	@echo "  author@example.com / AuthorPass123"
-	@echo "  reader@example.com / ReaderPass123"
+	@echo "Test admin account:"
+	@echo "  admin@example.com / AdminPass123!"
 
 # Setup test database
 test-setup:
