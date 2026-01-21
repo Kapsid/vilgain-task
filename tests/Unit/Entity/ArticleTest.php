@@ -23,11 +23,11 @@ final class ArticleTest extends TestCase
 
         $article = new Article();
         $article->setTitle('Test Article');
-        $article->setContent('This is test content');
+        $article->setContent('Test content');
         $article->setAuthor($author);
 
         $this->assertSame('Test Article', $article->getTitle());
-        $this->assertSame('This is test content', $article->getContent());
+        $this->assertSame('Test content', $article->getContent());
         $this->assertSame($author, $article->getAuthor());
     }
 

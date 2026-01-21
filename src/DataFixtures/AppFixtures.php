@@ -93,7 +93,6 @@ class AppFixtures extends Fixture
             $manager->persist($user);
         }
 
-        // Create Articles
         $article1 = new Article();
         $article1->setTitle('Test article');
         $article1->setContent('This is the content of the first article created by admin.');

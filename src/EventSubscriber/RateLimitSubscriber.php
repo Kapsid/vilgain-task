@@ -36,7 +36,6 @@ final readonly class RateLimitSubscriber implements EventSubscriberInterface
         $route = $request->attributes->get('_route');
         $clientIp = $request->getClientIp() ?? 'unknown';
 
-        // Apply endpoint-specific rate limits
         $specificLimiter = match ($route) {
             'auth_login' => $this->loginLimiter->create($clientIp),
             'auth_register' => $this->registrationLimiter->create($clientIp),
@@ -50,7 +49,6 @@ final readonly class RateLimitSubscriber implements EventSubscriberInterface
             }
         }
 
-        // Apply global API rate limit to all /api/ routes
         if (\is_string($route) && str_starts_with($request->getPathInfo(), '/api/')) {
             $apiLimit = $this->apiLimiter->create($clientIp);
             $limit = $apiLimit->consume();

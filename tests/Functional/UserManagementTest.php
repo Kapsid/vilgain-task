@@ -51,7 +51,7 @@ final class UserManagementTest extends ApiTestCase
 
         $this->authenticatedRequest($admin, 'POST', '/api/v1/users', [
             'email' => 'newuser@example.com',
-            'password' => 'SecurePass123',
+            'password' => 'SecurePass123!',
             'name' => 'New User',
             'role' => 'author',
         ]);
@@ -71,7 +71,7 @@ final class UserManagementTest extends ApiTestCase
 
         $this->authenticatedRequest($user, 'POST', '/api/v1/users', [
             'email' => 'newuser@example.com',
-            'password' => 'SecurePass123',
+            'password' => 'SecurePass123!',
             'name' => 'New User',
             'role' => 'reader',
         ]);

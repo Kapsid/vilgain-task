@@ -27,7 +27,7 @@ abstract class ApiTestCase extends WebTestCase
         $this->entityManager->createQuery('DELETE FROM App\Entity\User')->execute();
     }
 
-    protected function createUser(string $email, string $name, UserRole $role, string $password = 'password123'): User
+    protected function createUser(string $email, string $name, UserRole $role, string $password = 'Password123!'): User
     {
         $passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
 

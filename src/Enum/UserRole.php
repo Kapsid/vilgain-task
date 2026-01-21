@@ -18,14 +18,4 @@ enum UserRole: string
             self::READER => 'ROLE_READER',
         };
     }
-
-    public static function fromSymfonyRole(string $role): self
-    {
-        return match ($role) {
-            'ROLE_ADMIN' => self::ADMIN,
-            'ROLE_AUTHOR' => self::AUTHOR,
-            'ROLE_READER' => self::READER,
-            default => self::READER,
-        };
-    }
 }

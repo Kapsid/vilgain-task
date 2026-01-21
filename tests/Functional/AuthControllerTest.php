@@ -24,7 +24,7 @@ final class AuthControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'email' => 'newuser@example.com',
-                'password' => 'SecurePass123',
+                'password' => 'SecurePass123!',
                 'name' => 'New User',
                 'role' => 'reader',
             ]),
@@ -66,7 +66,7 @@ final class AuthControllerTest extends WebTestCase
     {
         return [
             'invalid email' => [
-                ['email' => 'invalid-email', 'password' => 'SecurePass123', 'name' => 'User', 'role' => 'reader'],
+                ['email' => 'invalid-email', 'password' => 'SecurePass123!', 'name' => 'User', 'role' => 'reader'],
                 'invalid email format',
             ],
             'short password' => [
@@ -78,11 +78,15 @@ final class AuthControllerTest extends WebTestCase
                 'password missing uppercase',
             ],
             'password without number' => [
-                ['email' => 'user@example.com', 'password' => 'NoNumbersHere', 'name' => 'User', 'role' => 'reader'],
+                ['email' => 'user@example.com', 'password' => 'NoNumbersHere!', 'name' => 'User', 'role' => 'reader'],
                 'password missing number',
             ],
+            'password without special character' => [
+                ['email' => 'user@example.com', 'password' => 'SecurePass123', 'name' => 'User', 'role' => 'reader'],
+                'password missing special character',
+            ],
             'invalid role' => [
-                ['email' => 'user@example.com', 'password' => 'SecurePass123', 'name' => 'User', 'role' => 'invalid_role'],
+                ['email' => 'user@example.com', 'password' => 'SecurePass123!', 'name' => 'User', 'role' => 'invalid_role'],
                 'invalid role value',
             ],
         ];
@@ -102,7 +106,7 @@ final class AuthControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'email' => 'duplicate@example.com',
-                'password' => 'SecurePass123',
+                'password' => 'SecurePass123!',
                 'name' => 'First User',
                 'role' => 'reader',
             ]),
@@ -119,7 +123,7 @@ final class AuthControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'email' => 'duplicate@example.com',
-                'password' => 'SecurePass456',
+                'password' => 'SecurePass456!',
                 'name' => 'Second User',
                 'role' => 'author',
             ]),

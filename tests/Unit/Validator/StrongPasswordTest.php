@@ -61,11 +61,12 @@ final class StrongPasswordTest extends TestCase
         $this->assertNotNull($regexConstraint);
         $this->assertNotNull($regexConstraint->pattern);
 
-        // Pattern should require lowercase, uppercase, and digit
+        // Pattern should require lowercase, uppercase, digit, and special character
         $pattern = $regexConstraint->pattern;
-        $this->assertMatchesRegularExpression($pattern, 'ValidPass123');
-        $this->assertDoesNotMatchRegularExpression($pattern, 'alllowercase');
-        $this->assertDoesNotMatchRegularExpression($pattern, 'ALLUPPERCASE');
-        $this->assertDoesNotMatchRegularExpression($pattern, '12345678901');
+        $this->assertMatchesRegularExpression($pattern, 'ValidPass123!');
+        $this->assertDoesNotMatchRegularExpression($pattern, 'alllowercase!');
+        $this->assertDoesNotMatchRegularExpression($pattern, 'ALLUPPERCASE!');
+        $this->assertDoesNotMatchRegularExpression($pattern, '12345678901!');
+        $this->assertDoesNotMatchRegularExpression($pattern, 'ValidPass123'); // missing special char
     }
 }

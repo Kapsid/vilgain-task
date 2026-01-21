@@ -86,7 +86,7 @@ final class AuthController extends AbstractController
     public function login(): JsonResponse
     {
         // This method will never be executed because the login is handled by the security firewall
-        // This is just for documentation purposes
+        // This is just for documentation purposes, can removed in the future
         return $this->json(['error' => 'This should never be reached'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }

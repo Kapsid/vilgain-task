@@ -54,8 +54,6 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Find articles with author eagerly loaded to prevent N+1 queries.
-     *
      * @return Article[]
      */
     public function findAllWithAuthor(int $limit, int $offset): array

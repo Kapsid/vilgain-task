@@ -44,11 +44,11 @@ POST /auth/login
 
 ### Articles (public read, author/admin write)
 ```bash
-GET /articles              # List all
-GET /articles/{id}         # Get one
-POST /articles             # Create (author/admin)
-PUT /articles/{id}         # Update (owner/admin)
-DELETE /articles/{id}      # Delete (owner/admin)
+GET /articles
+GET /articles/{id}
+POST /articles
+PUT /articles/{id}
+DELETE /articles/{id}
 ```
 
 ### Users (admin only)
@@ -90,3 +90,13 @@ curl -X POST http://localhost:8080/articles \
 - Doctrine ORM
 - JWT Authentication
 - Swagger/OpenAPI
+- Phpstan and Phpcs in pre-commit
+- PHPUnit for testing
+
+
+## Potential improvements for the future
+- Check leaked passwords when registering
+- More test coverage - services etc.
+- API: Allow to change password (was not in spec)
+- API: Implementation of sorting and filtering (was not in spec)
+- JWT refresh token (was not in spec)

@@ -4,7 +4,6 @@ controllers:
         namespace: App\Controller
     type: attribute
 
-# NelmioApiDocBundle routes
 nelmio_api_doc:
     resource: '@NelmioApiDocBundle/config/routing/swaggerui.xml'
     prefix: /api/doc

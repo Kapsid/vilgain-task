@@ -12,6 +12,7 @@ final readonly class UpdateArticleRequest
         #[Assert\Length(min: 3, max: 255)]
         public ?string $title = null,
 
+        #[Assert\Length(min: 10, max: 50000)]
         public ?string $content = null,
     ) {
     }

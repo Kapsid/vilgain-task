@@ -34,8 +34,8 @@ final class StrongPassword extends Compound
                 minMessage: 'Password must be at least 12 characters long.',
             ),
             new Assert\Regex(
-                pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
-                message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number.',
+                pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};\':"\\\\|,.<>\/?]).+$/',
+                message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
             ),
         ];
     }

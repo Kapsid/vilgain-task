@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,7 @@ use Throwable;
 final readonly class ExceptionSubscriber implements EventSubscriberInterface
 {
     public function __construct(
+        private LoggerInterface $logger,
         private string $environment = 'prod',
     ) {
     }
@@ -30,6 +32,10 @@ final readonly class ExceptionSubscriber implements EventSubscriberInterface
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
+        $request = $event->getRequest();
+
+        $this->logException($exception, $request->getPathInfo(), $request->getMethod());
+
         $data = $this->buildErrorResponse($exception);
         $statusCode = $exception instanceof HttpExceptionInterface
             ? $exception->getStatusCode()
@@ -42,18 +48,38 @@ final readonly class ExceptionSubscriber implements EventSubscriberInterface
         $event->setResponse($response);
     }
 
+    private function logException(Throwable $exception, string $path, string $method): void
+    {
+        $context = [
+            'exception' => $exception::class,
+            'message' => $exception->getMessage(),
+            'path' => $path,
+            'method' => $method,
+        ];
+
+        if ($exception instanceof HttpExceptionInterface) {
+            $statusCode = $exception->getStatusCode();
+            if ($statusCode >= 500) {
+                $this->logger->error('Server error occurred', $context);
+            } elseif ($statusCode >= 400) {
+                $this->logger->warning('Client error occurred', $context);
+            }
+        } else {
+            $context['trace'] = $exception->getTraceAsString();
+            $this->logger->critical('Unhandled exception occurred', $context);
+        }
+    }
+
     /**
      * @return array<string, mixed>
      */
     private function buildErrorResponse(Throwable $exception): array
     {
-        // Check for validation errors in exception chain
         $validationException = $this->findValidationException($exception);
         if (null !== $validationException) {
             return $this->formatValidationErrors($validationException);
         }
 
-        // HTTP exceptions - return their message
         if ($exception instanceof HttpExceptionInterface) {
             return [
                 'error' => $exception->getMessage(),
@@ -61,7 +87,7 @@ final readonly class ExceptionSubscriber implements EventSubscriberInterface
             ];
         }
 
-        // Non-HTTP exceptions - hide details in production
+        // Hiding details
         if ('dev' === $this->environment || 'test' === $this->environment) {
             return [
                 'error' => $exception->getMessage(),

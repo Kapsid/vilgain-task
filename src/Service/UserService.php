@@ -11,14 +11,14 @@ use App\Entity\User;
 use App\Enum\UserRole;
 use App\Exception\EmailAlreadyExistsException;
 use App\Exception\EntityNotFoundException;
+use App\Factory\UserFactory;
 use App\Repository\UserRepository;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final readonly class UserService
 {
     public function __construct(
         private UserRepository $userRepository,
-        private UserPasswordHasherInterface $passwordHasher,
+        private UserFactory $userFactory,
     ) {
     }
 
@@ -50,11 +50,7 @@ final readonly class UserService
     ): User {
         $this->ensureEmailNotExists($email);
 
-        $user = new User();
-        $user->setEmail($email);
-        $user->setName($name);
-        $user->setRole($role);
-        $user->setPassword($this->passwordHasher->hashPassword($user, $password));
+        $user = $this->userFactory->create($email, $password, $name, $role);
 
         $this->userRepository->save($user, true);
 
@@ -95,11 +91,6 @@ final readonly class UserService
     {
         return $this->userRepository->find($id)
             ?? throw new EntityNotFoundException('User', $id);
-    }
-
-    public function findByEmail(string $email): ?User
-    {
-        return $this->userRepository->findByEmail($email);
     }
 
     /**

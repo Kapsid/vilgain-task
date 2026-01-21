@@ -14,7 +14,8 @@ final readonly class CreateArticleRequest
         public string $title,
 
         #[Assert\NotBlank]
-        #[Assert\Length(min: 10, max: 50000, minMessage: 'Content must be at least 10 characters.', maxMessage: 'Content cannot exceed 50000 characters.')]
+        #[Assert\Length(min: 10, max: 50000, minMessage: 'Content must be at least 10 characters.',
+            maxMessage: 'Content cannot exceed 50000 characters.')]
         public string $content,
     ) {
     }

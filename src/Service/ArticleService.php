@@ -9,21 +9,20 @@ use App\DTO\Request\UpdateArticleRequest;
 use App\Entity\Article;
 use App\Entity\User;
 use App\Exception\EntityNotFoundException;
+use App\Factory\ArticleFactory;
 use App\Repository\ArticleRepository;
 
 final readonly class ArticleService
 {
     public function __construct(
         private ArticleRepository $articleRepository,
+        private ArticleFactory $articleFactory,
     ) {
     }
 
     public function createArticle(CreateArticleRequest $request, User $author): Article
     {
-        $article = new Article();
-        $article->setTitle($request->title);
-        $article->setContent($request->content);
-        $article->setAuthor($author);
+        $article = $this->articleFactory->create($request->title, $request->content, $author);
 
         $this->articleRepository->save($article, true);
 
@@ -74,13 +73,5 @@ final readonly class ArticleService
     public function countAll(): int
     {
         return $this->articleRepository->count([]);
-    }
-
-    /**
-     * @return Article[]
-     */
-    public function findByAuthor(User $author): array
-    {
-        return $this->articleRepository->findByAuthor($author);
     }
 }
