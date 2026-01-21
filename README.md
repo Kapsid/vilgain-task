@@ -85,6 +85,16 @@ curl -X POST http://localhost:8080/api/v1/articles \
 | Author | Create articles, edit/delete own |
 | Reader | View articles only |
 
+## Default Test Account - JUST FOR TESTING PURPOSE
+
+After running `make run`, an admin account is available:
+
+| Email | Password | Role |
+|-------|----------|------|
+| admin@example.com | AdminPass123! | Admin |
+
+Note: Public registration (`/api/v1/auth/register`) only allows `author` and `reader` roles. Admin users can only be created by existing admins via `/api/v1/users`.
+
 ## Password Requirements
 
 - Minimum 12 characters
