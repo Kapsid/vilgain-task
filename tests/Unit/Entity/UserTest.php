@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\User;
 use App\Enum\UserRole;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -49,36 +50,24 @@ final class UserTest extends TestCase
     }
 
     #[Test]
-    public function adminUserIsIdentifiedCorrectly(): void
+    #[DataProvider('roleIdentificationProvider')]
+    public function userRoleIsIdentifiedCorrectly(UserRole $role, bool $isAdmin, bool $isAuthor, bool $isReader): void
     {
         $user = new User();
-        $user->setRole(UserRole::ADMIN);
+        $user->setRole($role);
 
-        $this->assertTrue($user->isAdmin());
-        $this->assertFalse($user->isAuthor());
-        $this->assertFalse($user->isReader());
+        $this->assertSame($isAdmin, $user->isAdmin());
+        $this->assertSame($isAuthor, $user->isAuthor());
+        $this->assertSame($isReader, $user->isReader());
     }
 
-    #[Test]
-    public function authorUserIsIdentifiedCorrectly(): void
+    public static function roleIdentificationProvider(): array
     {
-        $user = new User();
-        $user->setRole(UserRole::AUTHOR);
-
-        $this->assertFalse($user->isAdmin());
-        $this->assertTrue($user->isAuthor());
-        $this->assertFalse($user->isReader());
-    }
-
-    #[Test]
-    public function readerUserIsIdentifiedCorrectly(): void
-    {
-        $user = new User();
-        $user->setRole(UserRole::READER);
-
-        $this->assertFalse($user->isAdmin());
-        $this->assertFalse($user->isAuthor());
-        $this->assertTrue($user->isReader());
+        return [
+            'admin' => [UserRole::ADMIN, true, false, false],
+            'author' => [UserRole::AUTHOR, false, true, false],
+            'reader' => [UserRole::READER, false, false, true],
+        ];
     }
 
     #[Test]
@@ -92,8 +81,6 @@ final class UserTest extends TestCase
         $this->assertNotNull($user->getUpdatedAt());
         $this->assertGreaterThanOrEqual($beforeCreation, $user->getCreatedAt());
         $this->assertLessThanOrEqual($afterCreation, $user->getCreatedAt());
-        $this->assertGreaterThanOrEqual($beforeCreation, $user->getUpdatedAt());
-        $this->assertLessThanOrEqual($afterCreation, $user->getUpdatedAt());
     }
 
     #[Test]

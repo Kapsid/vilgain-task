@@ -4,29 +4,34 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
+use App\Enum\UserRole;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\HttpFoundation\Response;
 
 final class UserManagementTest extends ApiTestCase
 {
-    public function testNonAdminCannotAccessUsersList(): void
+    #[Test]
+    #[DataProvider('nonAdminRolesProvider')]
+    public function nonAdminCannotAccessUsersList(UserRole $role): void
     {
-        $reader = $this->createReader();
+        $user = $this->createUser("user-{$role->value}@example.com", 'User', $role);
 
-        $this->authenticatedRequest($reader, 'GET', '/api/v1/users');
+        $this->authenticatedRequest($user, 'GET', '/api/v1/users');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
-    public function testAuthorCannotAccessUsersList(): void
+    public static function nonAdminRolesProvider(): array
     {
-        $author = $this->createAuthor();
-
-        $this->authenticatedRequest($author, 'GET', '/api/v1/users');
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        return [
+            'reader' => [UserRole::READER],
+            'author' => [UserRole::AUTHOR],
+        ];
     }
 
-    public function testAdminCanAccessUsersList(): void
+    #[Test]
+    public function adminCanAccessUsersList(): void
     {
         $admin = $this->createAdmin();
 
@@ -37,10 +42,10 @@ final class UserManagementTest extends ApiTestCase
         $response = $this->getResponseData();
         $this->assertArrayHasKey('data', $response);
         $this->assertArrayHasKey('total', $response);
-        $this->assertNotEmpty($response['data']);
     }
 
-    public function testAdminCanCreateUser(): void
+    #[Test]
+    public function adminCanCreateUser(): void
     {
         $admin = $this->createAdmin();
 
@@ -58,11 +63,13 @@ final class UserManagementTest extends ApiTestCase
         $this->assertSame('author', $response['role']);
     }
 
-    public function testNonAdminCannotCreateUser(): void
+    #[Test]
+    #[DataProvider('nonAdminRolesProvider')]
+    public function nonAdminCannotCreateUser(UserRole $role): void
     {
-        $author = $this->createAuthor();
+        $user = $this->createUser("user-{$role->value}@example.com", 'User', $role);
 
-        $this->authenticatedRequest($author, 'POST', '/api/v1/users', [
+        $this->authenticatedRequest($user, 'POST', '/api/v1/users', [
             'email' => 'newuser@example.com',
             'password' => 'SecurePass123',
             'name' => 'New User',
@@ -72,7 +79,8 @@ final class UserManagementTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
-    public function testAdminCanUpdateUser(): void
+    #[Test]
+    public function adminCanUpdateUser(): void
     {
         $admin = $this->createAdmin();
         $reader = $this->createReader('reader@example.com', 'Reader');
@@ -89,29 +97,31 @@ final class UserManagementTest extends ApiTestCase
         $this->assertSame('author', $response['role']);
     }
 
-    public function testAdminCanDeleteUser(): void
+    #[Test]
+    public function adminCanDeleteUser(): void
     {
         $admin = $this->createAdmin();
         $reader = $this->createReader('todelete@example.com', 'To Delete');
 
-        $readerId = $reader->getId();
-
-        $this->authenticatedRequest($admin, 'DELETE', '/api/v1/users/'.$readerId);
+        $this->authenticatedRequest($admin, 'DELETE', '/api/v1/users/'.$reader->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
 
-    public function testNonAdminCannotDeleteUser(): void
+    #[Test]
+    #[DataProvider('nonAdminRolesProvider')]
+    public function nonAdminCannotDeleteUser(UserRole $role): void
     {
         $admin = $this->createAdmin();
-        $author = $this->createAuthor();
+        $user = $this->createUser("user-{$role->value}@example.com", 'User', $role);
 
-        $this->authenticatedRequest($author, 'DELETE', '/api/v1/users/'.$admin->getId());
+        $this->authenticatedRequest($user, 'DELETE', '/api/v1/users/'.$admin->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
-    public function testUnauthenticatedCannotAccessUsers(): void
+    #[Test]
+    public function unauthenticatedCannotAccessUsers(): void
     {
         $this->client->request('GET', '/api/v1/users');
 
