@@ -16,7 +16,7 @@ This will:
 - Start the API
 
 **URLs:**
-- API: http://localhost:8080
+- API: http://localhost:8080/api/v1
 - Swagger UI: http://localhost:8080/api/doc
 
 ## Make Commands
@@ -25,7 +25,9 @@ This will:
 |---------|-------------|
 | `make run` | Full setup with fixtures |
 | `make up` | Start containers |
-| `make down` | Stop containers |
+| `make down` | Stop and remove containers |
+| `make stop` | Stop containers (without removing) |
+| `make reset` | Reset database (drop, recreate, migrate, fixtures) |
 | `make test` | Run tests |
 | `make fixtures` | Reload example data |
 
@@ -34,45 +36,45 @@ This will:
 ### Auth
 ```bash
 # Register
-POST /auth/register
-{"email": "user@example.com", "password": "pass123", "name": "User", "role": "author"}
+POST /api/v1/auth/register
+{"email": "user@example.com", "password": "SecurePass123!", "name": "User", "role": "author"}
 
 # Login (returns JWT token)
-POST /auth/login
-{"email": "admin@example.com", "password": "admin123"}
+POST /api/v1/auth/login
+{"email": "admin@example.com", "password": "AdminPass123!"}
 ```
 
 ### Articles (public read, author/admin write)
 ```bash
-GET /articles
-GET /articles/{id}
-POST /articles
-PUT /articles/{id}
-DELETE /articles/{id}
+GET /api/v1/articles
+GET /api/v1/articles/{id}
+POST /api/v1/articles
+PUT /api/v1/articles/{id}
+DELETE /api/v1/articles/{id}
 ```
 
 ### Users (admin only)
 ```bash
-GET /users
-GET /users/{id}
-POST /users
-PUT /users/{id}
-DELETE /users/{id}
+GET /api/v1/users
+GET /api/v1/users/{id}
+POST /api/v1/users
+PUT /api/v1/users/{id}
+DELETE /api/v1/users/{id}
 ```
 
-## Example: Create Article
+## Example: Create Article (for more check Swagger docs)
 
 ```bash
 # 1. Login
-TOKEN=$(curl -s -X POST http://localhost:8080/auth/login \
+TOKEN=$(curl -s -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"author@example.com","password":"author123"}' | jq -r '.token')
+  -d '{"email":"author@example.com","password":"AuthorPass123!"}' | jq -r '.token')
 
 # 2. Create article
-curl -X POST http://localhost:8080/articles \
+curl -X POST http://localhost:8080/api/v1/articles \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
-  -d '{"title":"My Article","content":"Content here"}'
+  -d '{"title":"My Article","content":"This is the content of my article which needs to be at least 10 characters."}'
 ```
 
 ## Roles
@@ -83,6 +85,14 @@ curl -X POST http://localhost:8080/articles \
 | Author | Create articles, edit/delete own |
 | Reader | View articles only |
 
+## Password Requirements
+
+- Minimum 12 characters
+- At least one uppercase letter
+- At least one lowercase letter
+- At least one number
+- At least one special character (`!@#$%^&*` etc.)
+
 ## Tech Stack
 
 - PHP 8.2 / Symfony 7.2
@@ -90,13 +100,14 @@ curl -X POST http://localhost:8080/articles \
 - Doctrine ORM
 - JWT Authentication
 - Swagger/OpenAPI
-- Phpstan and Phpcs in pre-commit
+- PHPStan and PHP-CS-Fixer in pre-commit
 - PHPUnit for testing
-
+- Rate limiting (see `config/packages/rate_limiter.yaml`)
 
 ## Potential improvements for the future
-- Check leaked passwords when registering
+- Check leaked passwords when registering (NotCompromisedPassword)
 - More test coverage - services etc.
-- API: Allow to change password (was not in spec)
-- API: Implementation of sorting and filtering (was not in spec)
-- JWT refresh token (was not in spec)
+- API: Allow to change password
+- API: Implementation of sorting and filtering
+- JWT refresh token
+- CORS configuration for frontend integration
